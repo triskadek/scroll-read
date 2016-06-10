@@ -9,7 +9,7 @@ module.exports = function () {
         author : faker.internet.userName(),
         date : faker.date.recent(),
         title:  faker.lorem.sentence(),
-        body : _.times(24, function () {
+        body : _.times(12, function () {
           return  '<p>' + faker.lorem.paragraph(24) + '</p>'
         })
       }

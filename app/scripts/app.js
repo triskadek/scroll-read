@@ -30,13 +30,22 @@ app.widgets.scrollRead = {
 
     this.sidebar = $('.o-sidebar__container');
     this.main = $('.o-main__inner');
+    this.didScroll = false;
 
     $(window).on('beforeunload', function(){
       $(window).scrollTop(0);
       console.log('pii');
     });
 
+    setInterval(function () {
+      if (self.didScroll) {
+        self.didScroll = false;
+        self.mainScroll();
+      }
+    },500);
+
     this.collectPosts();
+
 
   },
 
@@ -56,26 +65,26 @@ app.widgets.scrollRead = {
 
   mainScroll: function() {
     var
-      self = this,
-      posts = this.main.find('.o-post');
+          self = this,
+          posts = this.main.find('.o-post');
 
 
-    var coordinates = []
-    for (var i = 0; i < posts.length; i++) {
-      var coordinate = posts.eq(i).position();
-      coordinates.push(parseInt(coordinate.top, 10));
-    }
+        var coordinates = []
+        for (var i = 0; i < posts.length; i++) {
+          var coordinate = posts.eq(i).position();
+          coordinates.push(parseInt(coordinate.top, 10));
+        }
 
-    var position = $('.o-header').offset();
+        var position = $('.o-header').offset();
 
-    for (var i = 0; i < coordinates.length; i++) {
-      if(position.top >= coordinates[i] && position.top < coordinates[i +1]) {
-        self.updateProgress(posts.eq(i));
-        posts.removeClass('o-post--active');
-        posts.eq(i).addClass('o-post--active');
+        for (var i = 0; i < coordinates.length; i++) {
+          if(position.top >= coordinates[i] && position.top < coordinates[i +1]) {
+            self.updateProgress(posts.eq(i));
+            posts.removeClass('o-post--active');
+            posts.eq(i).addClass('o-post--active');
 
-      }
-    }
+          }
+        }
   },
 
   updateProgress: function(post) {
@@ -83,12 +92,12 @@ app.widgets.scrollRead = {
       post = post,
       self = this,
       progress = self.sidebar.find('.o-sidebar__post').eq(post.index()).find('.o-read-bar'),
-      max = post.height(),
+      max = post.scrollTop() + post.height(),
       value = $(window).scrollTop(),
 
-    width = ((value / max ) * 100) - 100 * post.index();
+    width = Math.round(value) / Math.round( max ) * 100) - 100 * post.index();
     console.log('width', width + '%', post.index());
-    progress.css('width', width + '%');
+    //progress.css('width', width + '%');
   },
 
   collectPosts: function() {
@@ -100,11 +109,11 @@ app.widgets.scrollRead = {
 
       self.sidebar.append(thumbList);
       self.main.append(postList);
-
+      self.posts = self.main.find('.o-post');
       // scroll tracking
-      $(window).on('scroll', throttle(function () {
-        self.mainScroll();
-      },500));
+      $(window).on('scroll', function () {
+        self.didScroll = true;
+      });
 
     });
   },

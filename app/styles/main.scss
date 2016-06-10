@@ -65,6 +65,8 @@ body {
 
   .o-post {
     padding: 0 10vw;
+    height: auto;
+    overflow: hidden;
     &__title {
       font-size: 36px;
       font-family: TimesNewRoman, 'Times New Roman', Times, Baskerville, Georgia, serif;
